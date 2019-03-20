@@ -222,33 +222,33 @@ confM</code></pre>
 ## 
 ##           Reference
 ## Prediction   A   B   C   D   E
-##          A 559   1   0   0   0
-##          B   0 367   0   0   0
-##          C   0   0 351   0   0
-##          D   0   0   0 324   1
-##          E   0   0   0   1 359
+##          A 551   0   0   0   0
+##          B   0 390   1   0   0
+##          C   0   0 333   0   0
+##          D   0   0   1 324   1
+##          E   0   0   0   2 360
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.9985          
-##                  95% CI : (0.9955, 0.9997)
-##     No Information Rate : 0.2848          
+##                Accuracy : 0.9975          
+##                  95% CI : (0.9941, 0.9992)
+##     No Information Rate : 0.2807          
 ##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
 ##                                           
-##                   Kappa : 0.9981          
+##                   Kappa : 0.9968          
 ##  Mcnemar's Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            1.0000   0.9973   1.0000   0.9969   0.9972
-## Specificity            0.9993   1.0000   1.0000   0.9994   0.9994
-## Pos Pred Value         0.9982   1.0000   1.0000   0.9969   0.9972
-## Neg Pred Value         1.0000   0.9994   1.0000   0.9994   0.9994
-## Prevalence             0.2848   0.1875   0.1788   0.1656   0.1834
-## Detection Rate         0.2848   0.1870   0.1788   0.1651   0.1829
-## Detection Prevalence   0.2853   0.1870   0.1788   0.1656   0.1834
-## Balanced Accuracy      0.9996   0.9986   1.0000   0.9982   0.9983</code></pre>
+## Sensitivity            1.0000   1.0000   0.9940   0.9939   0.9972
+## Specificity            1.0000   0.9994   1.0000   0.9988   0.9988
+## Pos Pred Value         1.0000   0.9974   1.0000   0.9939   0.9945
+## Neg Pred Value         1.0000   1.0000   0.9988   0.9988   0.9994
+## Prevalence             0.2807   0.1987   0.1707   0.1661   0.1839
+## Detection Rate         0.2807   0.1987   0.1696   0.1651   0.1834
+## Detection Prevalence   0.2807   0.1992   0.1696   0.1661   0.1844
+## Balanced Accuracy      1.0000   0.9997   0.9970   0.9963   0.9980</code></pre>
 <p>Our accuracy is 99+% on our validation set(!) which is pretty remarkable as it only took a bit of data cleaning and using gradient boosting with a bit of CV.</p>
 <p>There’s probably not straight forward way to improve the model as of now, so these results will be used for the questionaire.</p>
 <div id="predictions-on-the-test-set" class="section level2">
@@ -263,100 +263,13 @@ confM</code></pre>
 <p>Now we predict on the test set (20 examples).</p>
 <pre class="r"><code>library(knitr)
 testpreds &lt;- predict(myModel, testing)
-kable(data.frame(Number=1:length(testpreds), Prediction=testpreds))</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="right">Number</th>
-<th align="left">Prediction</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">1</td>
-<td align="left">B</td>
-</tr>
-<tr class="even">
-<td align="right">2</td>
-<td align="left">A</td>
-</tr>
-<tr class="odd">
-<td align="right">3</td>
-<td align="left">B</td>
-</tr>
-<tr class="even">
-<td align="right">4</td>
-<td align="left">A</td>
-</tr>
-<tr class="odd">
-<td align="right">5</td>
-<td align="left">A</td>
-</tr>
-<tr class="even">
-<td align="right">6</td>
-<td align="left">E</td>
-</tr>
-<tr class="odd">
-<td align="right">7</td>
-<td align="left">D</td>
-</tr>
-<tr class="even">
-<td align="right">8</td>
-<td align="left">B</td>
-</tr>
-<tr class="odd">
-<td align="right">9</td>
-<td align="left">A</td>
-</tr>
-<tr class="even">
-<td align="right">10</td>
-<td align="left">A</td>
-</tr>
-<tr class="odd">
-<td align="right">11</td>
-<td align="left">B</td>
-</tr>
-<tr class="even">
-<td align="right">12</td>
-<td align="left">C</td>
-</tr>
-<tr class="odd">
-<td align="right">13</td>
-<td align="left">B</td>
-</tr>
-<tr class="even">
-<td align="right">14</td>
-<td align="left">A</td>
-</tr>
-<tr class="odd">
-<td align="right">15</td>
-<td align="left">E</td>
-</tr>
-<tr class="even">
-<td align="right">16</td>
-<td align="left">E</td>
-</tr>
-<tr class="odd">
-<td align="right">17</td>
-<td align="left">A</td>
-</tr>
-<tr class="even">
-<td align="right">18</td>
-<td align="left">B</td>
-</tr>
-<tr class="odd">
-<td align="right">19</td>
-<td align="left">B</td>
-</tr>
-<tr class="even">
-<td align="right">20</td>
-<td align="left">B</td>
-</tr>
-</tbody>
-</table>
+# kable(data.frame(Number=1:length(testpreds), Prediction=testpreds))</code></pre>
 <p>We will find out how we did on the test set when we take the quiz.</p>
 </div>
 </div>
+</div>
+<div id="edit-removed-the-answers-so-they-are-not-public" class="section level1">
+<h1>EDIT: Removed the answers so they are not public</h1>
 </div>
 
 

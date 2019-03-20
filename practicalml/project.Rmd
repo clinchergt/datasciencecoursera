@@ -145,10 +145,11 @@ Now we predict on the test set (20 examples).
 ```{r}
 library(knitr)
 testpreds <- predict(myModel, testing)
-kable(data.frame(Number=1:length(testpreds), Prediction=testpreds))
+# kable(data.frame(Number=1:length(testpreds), Prediction=testpreds))
 ```
 
 We will find out how we did on the test set when we take the quiz.
 
+# EDIT: Removed the answers so they are not public
 
 
