@@ -1,0 +1,111 @@
+---
+title: "Statistical Inference Final Project"
+author: "JJDV"
+date: "January 25, 2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+##Simulation and Central Limit Theorem Exercise
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(error = FALSE, warning = FALSE)
+library(knitr)
+library(ggplot2)
+library(dplyr)
+```
+
+###Overview
+
+In this exercise/simulation we're gonna be taking a look at the exponential distribution, which can be simulated in R with the `rexp()` function. We're gonna be simulating distributions of 40 samples and getting their average. We will then analyze these averages and their properties.
+
+###Simulations
+We will be running 1000 simulations of exponential distributions, 40 samples each:
+
+```{r}
+means <- 0
+for (i in 1 : 1000) means <- c(means, mean(rexp(40, .2)))
+```
+
+After getting the averages for each of the distributions we graph a histogram of the means and we can then show the sample mean.
+
+```{r, fig.width=4, fig.height=3, fig.align='center'}
+hist(means, main="Distributions of sample averages")
+```
+
+###Sample vs Theory
+The theoretical mean should be **5** as we used a `lambda` value of **0.2**. The sample mean we got is **`r mean(means)`**. The variance of the distributions should have the same value as the mean, in our case `r (1/.2)^2`, the sample variance in this example came out to be **`r var(means)`** and standard deviation of **`r sd(means)`**.
+
+The distribution that results from substracting the theoretical mean from the sample means and then dividing by the standard error of the estimate can be represented by the following figure:
+
+```{r, fig.width=4, fig.height=3, fig.align='center'}
+cltdist <- (1000^(1/2)*(means - 5))/5
+hist(cltdist, main="CLT ~normal distribution", xlab = "Normalized sample differences")
+```
+
+This new distribution has mean `r mean(cltdist)` and variance `r var(cltdist)`. We could also take a look at the main quantiles for this new distribution and get a hint as to whether it truly is approximately normal.
+
+```{r}
+quantile(cltdist)
+```
+
+Finally with a confidence value of 5% we get an interval and check if our distribution respects the interval.
+
+```{r, fig.width=4, fig.height=3, fig.align='center'}
+# 5 + c(-1,1) * qnorm(.975) * 5 / sqrt(1000)
+# mean(means) + c(-1,1) * qnorm(.975) * sd(means) / sqrt(length(means))
+ggplot() + geom_density(aes(x = cltdist)) +
+    geom_density(aes(x = rnorm(800000, 0, 5)), colour = "#FF0000") +
+    xlim(c(-20,20)) + labs(xlab("Samples"), ylab("Density"))
+```
+
+
+##Basic Inferential Data Analysis Instructions
+
+```{r, include = F}
+data("ToothGrowth")
+```
+
+In this section we are gonna work with the `ToothGrowth` dataset. We are gonna be looking at the growth and comparing the `supp` and `dose` variables. The dataset has a total of `r dim(ToothGrowth)[1]` data points and `r dim(ToothGrowth)[2]` variables.
+
+```{r, echo = F}
+kable(ToothGrowth %>% group_by_(.dots=c("supp", "dose")) %>% summarize(length = mean(len), sd = sd(len)), caption = "Mean and standard deviation of growth by supplement and dosage")
+```
+
+We will therefore hypothesize that OJ supplementation is just as effective as ascorbic acid (`VC` in our dataset) in affecting tooth growth. We will test if this hypothesis holds true by doing an interval test with a confidence level of 95%.
+
+We decide to do separate T tests for these samples. We do three T tests one for each comparison between dosages and supplement, e.g. a dose of 0.5 for both OJ and VC compared. These T tests will be non-paired and with differing variances. Results are as  (see the appendix page for details):
+
+```{r, echo = F}
+kable(rbind(data.frame(Test="0.5 Dosage", P.value=0.006359), data.frame(Test="1 Dosage", P.value=0.001038), data.frame(Test="2 Dosage", P.value=0.9639)), caption = "P values for the different hypothesis and dosages")
+```
+
+###Conclusion
+We can therefore conclude that the hypothesis can be rejected for the does `0.5`, and `1`. That is, the `OJ` isn't as effective as the `VC` supplement. The hypothesis however cannot be rejected for the `2` dosage.
+
+
+```{r, echo=F, results='asis', eval=(opts_knit$get('rmarkdown.pandoc.to') == 'latex')}
+cat('\\pagebreak')
+```
+
+# Appendix
+
+
+### Table 2 full data
+```{r}
+# 0.5 Dosage
+t.test(len ~ supp, paired = F, var.equal = FALSE,
+       data=ToothGrowth[ToothGrowth$dose == 0.5,],
+       alternative = "two.sided")
+
+# 1 Dosage
+t.test(len ~ supp, paired = F, var.equal = FALSE,
+       data=ToothGrowth[ToothGrowth$dose == 1,],
+       alternative = "two.sided")
+
+# 2 Dosage
+t.test(len ~ supp, paired = F, var.equal = FALSE,
+       data=ToothGrowth[ToothGrowth$dose == 2,],
+       alternative = "two.sided")
+```
