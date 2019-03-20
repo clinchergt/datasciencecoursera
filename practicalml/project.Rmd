@@ -1,0 +1,154 @@
+---
+title: "PracticalMLProject"
+author: "JDV"
+date: "March 19, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Practical ML Final Project
+
+This is data on exercise performance and how it is done. The `classe` column is a label for how the exercise was done, i.e. it indicates if the exercise was done properly or not.
+
+This project attempts to predict the results in the best possible manner. That task entails finding the appropriate metric to measure performance. A good model structure must also be picked carefully and appropriately. A training and testing set are provided, nonetheless, a validation set could be of great benefit. Cross validation could be used as a technique to make up for the lack of validation set.
+
+But first, we must first load and take a look at the data.
+
+## Loading and analyzing the data
+
+```{r}
+library(data.table)
+training <- fread('pml-training.csv')
+testing <- fread('pml-testing.csv')
+
+summary(training$classe)
+```
+
+Label comes in `character` format so we must first make it a `factor`.
+
+```{r}
+training[, classe := factor(classe)]
+unique(training$classe)
+```
+
+Now we take a look at the distribution of our label column:
+
+```{r}
+library(ggplot2)
+
+ggplot(training) +
+  geom_histogram(aes(classe), stat='count') +
+  labs(title='Classe varaible histogram', x='Value', y='Frequency')
+```
+
+We can see that data is pretty balanced so we don't really need to worry too much about which metric we are gonna be using as simple accuracy could represent well enough how we're doing, tho biasing predictions towards `A` might give the alg a free boost.
+
+## Cleaning data
+
+Now we go ahead and clean the data. Getting rid of `NA` values and picking the right columns to train the model on are gonna be the priorities. The process goes as follows:
+
+1. Removing columns with too many `NA` values (above a certain threshold)
+1. Replace remaining `NA` values with `0`
+1. Convert `character` columns to `factor`s and if they have too many values, just eliminate the column
+1. Remove columns that serve only as identifiers of rows (or behave similarly)
+
+```{r}
+library(caret)
+
+# Column pre-processing
+i <- 0
+colNames <- copy(names(training))
+currentCol <- ""
+
+for (tempCol in colNames){
+  i <- i + 1
+  actualCol <- training[[tempCol]]
+  currentCol <- tempCol
+  
+  # Remove columns with too many NA values (above a certain threshold)
+  if (sum(is.na(actualCol)) / length(actualCol) > 0.4) {
+    training[, (tempCol) := NULL]
+    next
+  }
+  
+  # Set NAs to zeros
+  set(training, which(is.na(training[[tempCol]])), tempCol, 0)
+  
+  if (class(actualCol) == 'character' & length(unique(actualCol)) < 10){
+    training[, (tempCol) := factor(get(tempCol))]
+  }
+  
+  # Couldn't be converted so we eliminate
+  if (class(actualCol) == 'character')
+    training[, (tempCol) := NULL]
+  
+  # Remove columns that are only identifiers
+  if (length(unique(actualCol)) > 0.99 * length(actualCol))
+    training[, (tempCol) := NULL]
+}
+```
+
+Once that is done, the training set will be split into training and validation sets.
+
+```{r}
+trainingIndices <- sample.int(nrow(training), as.integer(nrow(training)*.9))
+actualTraining <- training[trainingIndices]
+validation <- training[!trainingIndices]
+
+```
+
+## Picking a model and training
+
+When it comes to tabular data we have seen -- empirically -- how gradient boosting can perform really well. Now that data has been cleaned up we can go ahead and train a GBM model using `caret`.
+
+We also use k-fold cross validation in order to make sure our model regularizes well. We will also test our predictions against a validation set to make sure completely that our model performs well on unseen data.
+
+```{r, results='hide', message=F}
+train_control<- trainControl(method="cv", number=4, savePredictions = TRUE)
+
+set.seed(4242)
+myModel <- train(classe ~ ., actualTraining, method="gbm", trControl=train_control)
+
+```
+
+# Preliminary results against validation set
+
+```{r}
+gbmpreds <- predict(myModel, validation)
+confM <- caret::confusionMatrix(gbmpreds, validation$classe)
+confM
+```
+
+
+Our accuracy is 99+% on our validation set(!) which is pretty remarkable as it only took a bit of data cleaning and using gradient boosting with a bit of CV.
+
+There's probably not straight forward way to improve the model as of now, so these results will be used for the questionaire.
+
+## Predictions on the test set
+
+First we need to prepare our test set. In our case, this means only replacing `NA` values with `0`, as the rest of the cleaning process we used wouldn't really affect our predictions.
+
+```{r}
+for (i in names(testing)){
+  # Set NAs to zeros
+  set(testing, which(is.na(training[[i]])), i, 0)
+}
+```
+
+### Actual predictions
+
+Now we predict on the test set (20 examples).
+
+```{r}
+library(knitr)
+testpreds <- predict(myModel, testing)
+kable(data.frame(Number=1:length(testpreds), Prediction=testpreds))
+```
+
+We will find out how we did on the test set when we take the quiz.
+
+
+
