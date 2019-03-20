@@ -222,34 +222,34 @@ confM</code></pre>
 ## 
 ##           Reference
 ## Prediction   A   B   C   D   E
-##          A 531   2   0   0   0
-##          B   0 397   2   0   0
-##          C   0   0 345   2   0
-##          D   0   0   1 345   1
-##          E   0   0   0   1 336
+##          A 559   1   0   0   0
+##          B   0 367   0   0   0
+##          C   0   0 351   0   0
+##          D   0   0   0 324   1
+##          E   0   0   0   1 359
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.9954          
-##                  95% CI : (0.9913, 0.9979)
-##     No Information Rate : 0.2705          
+##                Accuracy : 0.9985          
+##                  95% CI : (0.9955, 0.9997)
+##     No Information Rate : 0.2848          
 ##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
 ##                                           
-##                   Kappa : 0.9942          
+##                   Kappa : 0.9981          
 ##  Mcnemar's Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            1.0000   0.9950   0.9914   0.9914   0.9970
-## Specificity            0.9986   0.9987   0.9988   0.9988   0.9994
-## Pos Pred Value         0.9962   0.9950   0.9942   0.9942   0.9970
-## Neg Pred Value         1.0000   0.9987   0.9981   0.9981   0.9994
-## Prevalence             0.2705   0.2033   0.1773   0.1773   0.1717
-## Detection Rate         0.2705   0.2022   0.1758   0.1758   0.1712
-## Detection Prevalence   0.2715   0.2033   0.1768   0.1768   0.1717
-## Balanced Accuracy      0.9993   0.9969   0.9951   0.9951   0.9982</code></pre>
-<p>Our accuracy is 99.85% on our validation set(!) which is pretty remarkable as it only took a bit of data cleaning and using gradient boosting with a bit of CV.</p>
+## Sensitivity            1.0000   0.9973   1.0000   0.9969   0.9972
+## Specificity            0.9993   1.0000   1.0000   0.9994   0.9994
+## Pos Pred Value         0.9982   1.0000   1.0000   0.9969   0.9972
+## Neg Pred Value         1.0000   0.9994   1.0000   0.9994   0.9994
+## Prevalence             0.2848   0.1875   0.1788   0.1656   0.1834
+## Detection Rate         0.2848   0.1870   0.1788   0.1651   0.1829
+## Detection Prevalence   0.2853   0.1870   0.1788   0.1656   0.1834
+## Balanced Accuracy      0.9996   0.9986   1.0000   0.9982   0.9983</code></pre>
+<p>Our accuracy is 99+% on our validation set(!) which is pretty remarkable as it only took a bit of data cleaning and using gradient boosting with a bit of CV.</p>
 <p>There’s probably not straight forward way to improve the model as of now, so these results will be used for the questionaire.</p>
 <div id="predictions-on-the-test-set" class="section level2">
 <h2>Predictions on the test set</h2>
