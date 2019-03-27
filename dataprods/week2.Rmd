@@ -1,0 +1,39 @@
+---
+title: "Week2 - Top Uni map"
+author: "JDV"
+date: "March 27, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+
+library(leaflet)
+library(htmltools)
+```
+
+```{r}
+uninames <- htmlEscape(c("MIT", "Stanford", "Harvard", "Caltech", "Cambridge", "Oxford", "ETH Zürich"))
+lngs <- c(-71.0942, -122.1697, -71.1167, -118.1253, 0.1149, 1.2544, 8.5477)
+lats <- c(42.3601, 37.4275, 42.3770, 34.1377, 52.2043, 51.7548, 47.3763)
+
+df <- data.frame(lat=lats, lng=lngs)
+
+unimaps <- df %>% leaflet()%>%
+  addTiles() %>%
+  addMarkers(popup = uninames) %>%
+  addPolylines(lat=lats, lng = lngs, group = 1:length(lats), opacity = .5)
+
+unimaps
+```
+
+*Click the markers to know which uni is which!*
+
+## Planning to visit top Unis?
+
+If you were to visit all these Unis, you should probably start at either ETH or Stanford since they're at the extremes and then you could just keep taking flights in the direction of the next uni. Some of these are in clusters so a bus/train ride might be enough to visit the very next one.
+
+Make sure to plan efficiently!
+
+_Top unis taken from: https://www.topuniversities.com/university-rankings/world-university-rankings/2018 _
+
