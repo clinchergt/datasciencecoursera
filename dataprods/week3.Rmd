@@ -1,0 +1,64 @@
+---
+title: "Budget Expenses -- Data Products (Week 3)"
+author: "JDV"
+date: "March 28, 2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(data.table)
+library(plotly)
+library(ggplot2)
+```
+
+## Expenses Data
+
+Data presented here was collected manually  across different months using the Android app Budget Watch: <https://github.com/brarcher/budget-watch>.
+
+Different categories or *budgets* are defined in the app and then each expense is then added to one of those categories as the user sees fit. The amounts and categories will be the focus of this presentation.
+
+*Some data was modified as to not reveal personal information about the person who collected it*
+
+
+
+## First we read the data
+
+Some very simple pre-processing will be done as data is already pretty clean.
+
+```{r, results='hide', echo=T}
+data <- fread("BudgetWatch.csv")
+data[, budget := factor(budget)]
+data[, account := factor(account)]
+data[, dateType := as.Date(date_formatted, format = '%b %d, %Y')]
+```
+
+### We now have the data loaded and ready to be analyzed.
+
+## Expenses
+
+```{r, warning=F, message=F, fig.cap='Amount spent by an individual over the span of almost a year. Amounts are in a X currency.'}
+g <- ggplot(data[, .(Amount = sum(value), ActualDate=dateType), by=date],
+            aes(x=(ActualDate))) +
+  geom_line(aes(y=Amount)) +
+  labs(title='Amount spent over time', x='Time', y='Amount spent') +
+  scale_x_date(date_breaks = "1 month", date_minor_breaks = "1 week", date_labels = "%B") +
+  theme(axis.text.x = element_text(angle=15),
+        axis.text.y = element_text(angle=90))
+  
+
+ggplotly(g)
+
+```
+
+## Analysis
+
+There are quite a few peaks in the graph which will be tried to explained here.
+
+Most of them seem to be at the very beginnings or ends or every month with a significantly higher peak in december.
+This higher peak could be explained by holiday expenses.
+
+Otherwise expenses seem to be relatively stable and under control.
+
+*Note: Analysis was kept short out of respect for graders' time.*
